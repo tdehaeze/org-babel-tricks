@@ -1,0 +1,67 @@
+#+TITLE: Literate programming with Org Babel and Matlab
+#+PROPERTY: header-args:matlab+ :exports both :eval no-export
+#+PROPERTY: header-args:matlab+ :session *MATLABTEST*
+
+* Plot Figures
+#+HEADER: :exports code :results none
+#+begin_src matlab :tangle test.m
+  x = linspace(0, 10, 100);
+  y = x.*sin(x);
+
+  figure;
+  plot(x, y);
+#+end_src
+
+#+HEADER: :var filepath="Figures/plt-postamble.png"
+#+HEADER: :tangle no :exports results :results file :noweb yes
+#+begin_src matlab
+  <<plt-postamble>>
+#+end_src
+
+#+RESULTS:
+[[file:Figures/plt-postamble.png]]
+
+
+* Display result as Org Table
+The function =data2orgtable= is available on [[https://github.com/tdehaeze/Org-Mode-Matlab][github]].
+
+#+begin_src matlab :results silent :exports code
+  x = 1:3;
+  y = sqrt(x);
+  data = [x;y];
+#+end_src
+
+#+begin_src matlab :results value table :exports both
+  data2orgtable(data, {}, {}, ' %.1f ');
+#+end_src
+
+#+RESULTS:
+| 1.0 | 2.0 | 3.0 |
+| 1.0 | 1.4 | 1.7 |
+
+#+begin_src matlab :results value table :exports both
+  data2orgtable(data, {'x', 'y'}, {}, ' %.1f ');
+#+end_src
+
+#+RESULTS:
+| x | 1.0 | 2.0 | 3.0 |
+| y | 1.0 | 1.4 | 1.7 |
+
+#+begin_src matlab :results value table :exports both
+  data2orgtable(data, {'x', 'y'}, {'a', 'b', 'c'}, ' %.1f ');
+#+end_src
+
+#+RESULTS:
+|   |   a |   b |   c |
+| x | 1.0 | 2.0 | 3.0 |
+| y | 1.0 | 1.4 | 1.7 |
+
+* Add hline to tables
+#+begin_src matlab :results value table :post addhdr(*this*)
+  ans = sprintf('x \t y \n 1 \t 2');
+#+end_src
+
+#+RESULTS:
+| x | y |
+|---+---|
+| 1 | 2 |

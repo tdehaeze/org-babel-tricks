@@ -1,0 +1,95 @@
+#+TITLE: Litterate Programming with Org-Mode
+
+This document gathers all my note, tricks, snippets for literate programming with org-mode and org-babel.
+These files are specific to some languages:
+- [[file:org-babel-matlab.org][Matlab]]
+- [[file:org-babel-tikz.org][Tikz]]
+
+I also created a file will many functions that can be useful:
+- [[file:org-babel-library.org][Library]]
+
+* Documentation
+https://orgmode.org/manual/Export-Settings.html#Export-Settings
+
+* Header Arguments
+https://orgmode.org/manual/Specific-header-arguments.html#Specific-header-arguments
+
+- =:var variablename=value= Used to pass variables to code
+- =:results=
+  - Collection:
+    - =value= will use the last value returned by the code
+    - =output= will display everything collected from =stdout=
+  - Type:
+    - =table= interpret the results as an org table
+    - =file= interpret the results as a path to a file. Then it will insert a link to the file
+  - Format:
+    - =raw= interpreted as row org mode and inserted directly into the buffer
+    - =latex= result enclosed by BEGIN_EXPORT latex block
+  - Handling:
+    - =silent= Do no insert the results but echo them in the mini buffer
+    - =replace= Default, insert the result in the buffer
+    - =append= or =prepend=
+- =:file filename description= description is optional
+- =:output-dir= Specifies the :output-dir for the results file
+- =:dir= Specify the default directory for code block execution
+- =:exports= Determine what part should be exported to say html or latex.
+  - =code= exports only the code
+  - =results= exports only the results
+  - =both= exports both
+  - =none= expert neither the code nor the results
+- =:tangle= Toggle tangling; or specify file name
+  - =yes= export to source code block to source file, the filename is derived from the org-mode filename and the language identifier of the source block
+  - =no= to not export during tangling
+  - =filename= export to specific filename
+- =:mkdirp= Toggle for parent directory creation for target files during tangling
+- =:comments= Toggle insertion of comments in tangled code files
+  - =no= The default. Do not insert any extra comments during tangling.
+  - =link= Wrap the ‘src’ code block in comments. Include links pointing back to the place in the Org file from where the code was tangled.
+  - =org= Nearest headline text from Org file is inserted as comment. The exact text that is inserted is picked from the leading context of the source block.
+  - =both= Includes both “link” and “org” comment options.
+  - =noweb= Includes “link” comment option, expands noweb references, and wraps them in link comments inside the body of the ‘src’ code block.
+- =:no-expand= Turn off variable assignment and noweb expansion during tangling
+- =:session= Preserve the state of code evaluation
+- =:cache= Avoid re-evaluating unchanged code blocks
+- =:sep= Delimiter for writing tabular results outside Org
+- =:shebang= Make tangled files executable
+- =:eval= Limit evaluation of specific code blocks
+  - =no= Org will never evaluate this source block
+  - =query= Org prompts the user for evaluation
+  - =no-export= Org will not evaluate during export
+  - =query-export= Org will prompt the user during export
+- =:post= ([[https://orgmode.org/manual/post.html#post][doc]]) Post processing of results of code block evaluation
+- =:prologue= Text to prepend to body of code block
+- =:epilogue= Text to append to body of code block
+
+- =:noweb= Toggle expansion of noweb references
+- =:noweb-ref= Specify block’s noweb reference resolution target
+- =:noweb-sep= String to separate noweb references
+
+* Good practices
+** Links to table/figure
+Instead of using =ref:fig:figure.png=, it is better to use =[[fig:figure.png]]= as it will work for both html and pdf export.
+
+To give a label to a table or a figure, use =#+NAME: fig:label=.
+
+|       | Figure    | Equation | Section   | Table     |
+|-------+-----------+----------+-----------+-----------|
+| Label | fig:label | eq:label | sec:label | tab:label |
+
+** Links to sections
+After the heading of the section, add =<<sec:label>>=.
+
+** TODO Display Units with =sinunitx= package
+[[file:~/gdrive/These/TODOs/orgmode.org::*Setup%20SIunix%20with%20html%20export%20(mathjax)][Setup SIunix with html export (mathjax)]]
+
+** TODO Math definitions
+https://www.reddit.com/r/orgmode/comments/7u2n0h/tip_for_defining_latex_macros_for_use_in_both/
+
+** Table of contents for github org display
+Use =* Table of contents :TOC:noexport:=.
+This uses https://github.com/snosov1/toc-org.
+The noexport is used to not export for html/latex as it is already included.
+This will only be displayed for Github orgmode rendering.
+
+** Ignore heading when exporting
+Use =:noexport:= tag

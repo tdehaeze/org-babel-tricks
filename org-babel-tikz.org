@@ -1,0 +1,74 @@
+#+TITLE: Literate programming with Org Babel and Tikz
+#+PROPERTY: header-args:latex  :headers '("\\usepackage{tikz}" "\\usepackage{import}" "\\import{/home/tdehaeze/gdrive/These/LaTeX/ressources/}{config.tex}")
+#+PROPERTY: header-args:latex+ :imagemagick t :fit yes
+#+PROPERTY: header-args:latex+ :iminoptions -scale 100% -density 150
+#+PROPERTY: header-args:latex+ :imoutoptions -quality 100
+#+PROPERTY: header-args:latex+ :results raw replace :buffer no
+#+PROPERTY: header-args:latex+ :eval no-export
+#+PROPERTY: header-args:latex+ :exports both
+#+PROPERTY: header-args:latex+ :mkdirp yes
+#+PROPERTY: header-args:latex+ :output-dir Figures
+
+Wanted header argument when exporting Tikz diagrams:
+- =:file filename.pdf/png/svg=
+- =:buffer= Use to set background and foreground colors
+  - =yes= org mode consults the value of =org-format-latex-options= and passes these to the dvipng program
+  - =no= org mode takes background and foreground from emacs buffer
+- =:header ("\\usepackage{tikz}")= Lisp list that specifies entries for the LaTeX preamble
+- =:fit yes= invokes the [[https://ctan.org/tex-archive/macros/latex/contrib/preview][LaTeX preview package]].
+- =:pdfheight= and =:pdfwidth= can be used to set the dimensions of the pdf page
+- =:imagemagick t= When not nil the source block is processed to pdf and the pdf is converted with ImageMagick to whatever is given as =:file=.
+- =:iminoptions= This is passed to ImageMagick before the pdf file.
+  - =-scale 100%=
+  - =-density 150=
+- =:imoutoptions= This is passed to ImageMagick before the output file.
+  - =-quality 100=
+  - =-flatten= it will make a white background instead of transparent
+- =:results raw replace=
+
+
+Specific headers for latex:
+- =:border=
+- =:fit=
+- =:imagemagick=
+- =:iminoptions=
+- =:imoutoptions=
+- =:packages=
+- =:pdfheight=
+- =:pdfpng=
+- =:pdfwidth=
+- =:headers=
+- =:packages=
+- =:buffer=
+
+* Export to svg/png/pdf
+
+#+begin_src latex :file classical_feedback.pdf :post pdf2svg(file=*this*, ext="png") :exports both
+  \begin{tikzpicture}
+    \node[addb={+}{}{}{}{-}] (addfb) at (0, 0){};
+    \node[block, right=1 of addfb] (K){$K$};
+    \node[addb={+}{}{}{}{}, right=1 of K] (adddu){};
+    \node[block, right=1 of adddu] (G){$G$};
+    \node[addb={+}{}{}{}{}, right=1 of G] (adddy){};
+    \node[addb={+}{}{}{}{-}, above right=1 and 1 of adddy] (adderror) {};
+    \node[addb={+}{}{}{}{}, below right=1 and 1 of adddy] (addn) {};
+
+    \draw[->] (addfb.east) -- (K.west) node[above left]{$\epsilon_{m}$};
+    \draw[->] (K.east) -- (adddu.west);
+    \draw[->] (adddu.east) -- (G.west) node[above left]{$u$};
+    \draw[->] (adderror.east) -- ++(0.8, 0) coordinate[](endpos) node[above left]{$\epsilon$};
+    \draw[->] (G.east) -- (adddy.west);
+    \draw[->] (adddy.east) -- (G-|endpos) node[above left]{$y$};
+    \draw[<-] (addfb.west) -- ++(-1, 0) node[above right]{$r$};
+    \draw[->] (G-|adderror) node[branch]{} -- (addn.north);
+    \draw[<-] (addn.east) -- (addn-|endpos) node[above left]{$n$};
+    \draw[->] (G-|adderror) -- (adderror.south);
+    \draw[->] ($(addfb.west)+(-0.3, 0)$) node[branch]{} |- (adderror.west);
+    \draw[->] (addn.west) -| (addfb.south) node[below right]{$y_m$};
+    \draw[<-] (adddu.north) -- ++(0, 0.8) node[below right]{$d_u$};
+    \draw[<-] (adddy.north) -- ++(0, 0.8) node[below right]{$d_y$};
+  \end{tikzpicture}
+#+end_src
+
+#+RESULTS:
+[[file:Figures/classical_feedback.png]]
