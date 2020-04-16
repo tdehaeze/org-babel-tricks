@@ -3,8 +3,7 @@
 #+PROPERTY: header-args:matlab+ :session *MATLABTEST*
 
 * Plot Figures
-#+HEADER: :exports code :results none
-#+begin_src matlab :tangle test.m
+#+begin_src matlab :tangle test.m :exports code :results none
   x = linspace(0, 10, 100);
   y = x.*sin(x);
 
@@ -12,15 +11,14 @@
   plot(x, y);
 #+end_src
 
-#+HEADER: :var filepath="Figures/plt-postamble.png"
-#+HEADER: :tangle no :exports results :results file :noweb yes
-#+begin_src matlab
-  <<plt-postamble>>
+#+HEADER: :tangle no :exports results :results raw :noweb yes
+#+begin_src matlab :var filepath="Figures/comp_filter_1st_order.pdf" :var figsize="wide-normal" :post pdf2svg(file=*this*, ext="png")
+  <<plt-matlab>>
 #+end_src
 
-#+RESULTS:
-[[file:Figures/plt-postamble.png]]
 
+#+RESULTS:
+[[file:Figures/comp_filter_1st_order.png]]
 
 * Display result as Org Table
 The function =data2orgtable= is available on [[https://github.com/tdehaeze/Org-Mode-Matlab][github]].
@@ -65,3 +63,34 @@ The function =data2orgtable= is available on [[https://github.com/tdehaeze/Org-M
 | x | y |
 |---+---|
 | 1 | 2 |
+
+* Gif animation
+#+begin_src matlab :results value file
+  h = figure;
+  set(h, 'visible', 'off');
+  set(h,'pos',[-10, -10, 300, 300]);
+  axis tight manual % this ensures that getframe() returns a consistent size
+  filename = 'Figures/testAnimated.gif';
+  for n = 1:0.5:5
+      % Draw plot for y = x.^n
+      x = 0:0.01:1;
+      y = x.^n;
+      plot(x,y);
+      drawnow;
+        % Capture the plot as an image
+        frame = getframe(h);
+        im = frame2im(frame);
+        [imind,cm] = rgb2ind(im,256);
+        % Write to the GIF File
+        if n == 1
+            imwrite(imind,cm,filename,'gif', 'Loopcount',inf);
+        else
+            imwrite(imind,cm,filename,'gif','WriteMode','append');
+        end
+  end
+  set(h, 'visible', 'on');
+  ans = filename;
+#+end_src
+
+#+RESULTS:
+[[file:Figures/testAnimated.gif]]

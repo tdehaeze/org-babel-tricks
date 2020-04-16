@@ -8,6 +8,14 @@ These files are specific to some languages:
 I also created a file will many functions that can be useful:
 - [[file:org-babel-library.org][Library]]
 
+* Useful Functions
+- =,bd=: =org-babel-demarcate-block= split the code block in two
+- =,bg=: go th named source block
+- =,bj=: insert block header argument
+- =,bt=: tangle buffer
+- =,bT=: tangle sub-tree
+- =,bs=: execute sub-tree
+
 * Documentation
 https://orgmode.org/manual/Export-Settings.html#Export-Settings
 
