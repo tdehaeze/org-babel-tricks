@@ -1,5 +1,12 @@
 #+TITLE: Custom Library of Babel
 
+* Various
+** =get-password= - Get Password from =pass=
+
+#+name: get-password
+#+begin_src bash :var passname="""
+  pass $passname | sed -n 1p
+#+end_src
 
 * Tikz
 ** =pdf2svg= - Export to pdf/png/svg at the same time
@@ -7,7 +14,6 @@
 #+name: pdf2svg
 #+begin_src sh :var file="" :var ext="svg" :results output
   _mydir="$(pwd)";
-  # Remove file:
   file=$(echo "$file" | cut -f 2- -d ':');
   _figdir=$(dirname "$file");
   cd $_figdir;
@@ -19,32 +25,50 @@
 #+end_src
 
 * Matlab
+** =matlab-dir= Go to current directory
+
+#+name: matlab-dir
+#+begin_src matlab :tangle no :results none :exports none :var current_dir=""
+  %% Go to current Directory
+  cd(current_dir);
+
+  %% Initialize ans with org-babel
+  ans = 0;
+#+end_src
+
+** =matlab-init= Initialize matlab
+
+#+name: matlab-init
+#+begin_src matlab :results none :exports none
+  %% Clear Workspace and Close figures
+  clear; close all; clc;
+
+  %% Intialize Laplace variable
+  s = zpk('s');
+#+end_src
+
 ** =addhdr= - Add hline to tables
 
 #+name: addhdr
 #+begin_src emacs-lisp :var tbl=""
-(cons (car tbl) (cons 'hline (cdr tbl)))
+  (cons (car tbl) (cons 'hline (cdr tbl)))
 #+end_src
 
-** =plt-postamble= Plot figures
+** =plt-matlab= Plot figures
 Some variable can be set by block that expands this org source code block:
-- "path": specify the path of the figure including the file extension. Can be relative or absolute. If not provided, it will create the figure in the =/tmp= folder
-- "fig_size": can specify the size of the figure. If not specify, default will be applied.
+- =path=: specify the path of the figure including the file extension. Can be relative or absolute. If not provided, it will create the figure in the =/tmp= folder
+- =fig_size=: can specify the size of the figure. If not specify, default will be applied.
 
-#+NAME: plt-postamble
-#+BEGIN_SRC matlab :results file :exports code
-  if ~exist('filepath')
+#+name: plt-matlab
+#+begin_src matlab :results value raw replace :exports code :var filepath="" :var figsize="normal-normal"
+  if ~exist('filepath') || length(filepath) < 2
     symbols = ['a':'z' 'A':'Z' '0':'9'];
     random_string = symbols(randi(numel(symbols),[1 5]));
-    filepath = ['/tmp/matlab-fig-', random_string,'.png'];
+    filepath = ['/tmp/matlab-fig-', random_string];
   end
 
-  if exist('figsize')
-    exportFig(filepath, figsize);
-  else
-    exportFig(filepath);
-  end
+  size_strings = strsplit(figsize, '-');
 
-  ans = filepath;
-  clear('filepath', 'figsize');
-#+END_SRC
+  ans = exportFig(filepath, 'width', size_strings{1}, 'height', size_strings{2});
+#+end_src
+
